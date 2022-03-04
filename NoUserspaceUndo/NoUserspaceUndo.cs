@@ -1,4 +1,3 @@
-using FrooxEngine;
 using FrooxEngine.Undo;
 using HarmonyLib;
 using NeosModLoader;
@@ -9,35 +8,35 @@ namespace NoUserspaceUndo
     {
         public override string Name => "NoUserspaceUndo";
         public override string Author => "badhaloninja";
-        public override string Version => "1.0.0";
+        public override string Version => "1.1.0";
         public override string Link => "https://github.com/badhaloninja/NoUserspaceUndo";
+
+        private static ModConfiguration config;
+
         public override void OnEngineInit()
         {
+            config = GetConfiguration();
+
             Harmony harmony = new Harmony("me.badhaloninja.NoUserspaceUndo");
             harmony.PatchAll();
         }
-        
-        public static bool Check(UndoManager __instance)
-        {
-            if (!__instance.World.IsUserspace()) return true;
 
-            DynamicVariableSpace space = __instance.World.RootSlot.FindSpace("World");
-            if (space == null) return false;
 
-            space.TryReadValue<bool>("UseUndoManager", out bool useUndoManager); 
-            return useUndoManager;
-        }
+
+        [AutoRegisterConfigKey]
+        private static readonly ModConfigurationKey<bool> AllowUserspaceUndo = new ModConfigurationKey<bool>("allowUserspaceUndo", "Allow using undo in userspace", () => false);
+
         class UndoManager_Patch
         {
             [HarmonyPatch(typeof(UndoManager), "Undo")]
             class Undo_Patch
             {
-                public static bool Prefix(UndoManager __instance) => Check(__instance);
+                public static bool Prefix() => config.GetValue<bool>(AllowUserspaceUndo);
             }
             [HarmonyPatch(typeof(UndoManager), "Redo")]
             class Redo_Patch
             {
-                public static bool Prefix(UndoManager __instance) => Check(__instance);
+                public static bool Prefix() => config.GetValue<bool>(AllowUserspaceUndo);
             }
         }
     }
