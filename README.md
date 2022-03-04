@@ -2,7 +2,7 @@
 
 A [NeosModLoader](https://github.com/zkxs/NeosModLoader) mod for [Neos VR](https://neos.com/) that disables the UndoManager in userspace
 
-You can disable this by setting a dynamic boolean value variable of `World/UseUndoManager` to `true` in userspace
+You can disable this in the mod config
 
 ## Installation
 1. Install [NeosModLoader](https://github.com/zkxs/NeosModLoader).
